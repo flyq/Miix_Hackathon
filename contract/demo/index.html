@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>这是一个HTML5的网页</title>
+<script src="./webpack/asch-web.async-node.min.js"></script>
+<script src="./webpack/asch-web.node.min.js"></script>
+<script src="./webpack/asch-web.web.min.js"></script>
+</head>
+<body>
+<p>Hello HTML5</p>
+
+<script>
+const host = 'http://testnet.asch.cn'// 'http://mainnet.asch.cn/'
+const net = AschWeb.Network.Test//   Network.Main
+
+let secret = 'robot dry lizard when pulp pitch manage recall pipe decade vendor eagle'
+let secondSecret = '12345678' //'11111111a'
+let address = 'ADXEbSc8N8yV76oA4hvKDBFtiqumsjTT5a'
+let to = 'AJauPN89XPjWTmDY9fawXygzEJfQYDnAgB'
+
+let unsignedTrx =
+{
+    type: 1,
+    fee: 10000000,
+    args: [1000000, 'AJauPN89XPjWTmDY9fawXygzEJfQYDnAgB'],
+    timestamp: 84190767,
+    message: '',
+    senderPublicKey: '',
+    senderId: 'ACFi5K42pVVYxq5rFkFQBa6c6uFLmGFUP2',
+}
+
+
+//utils用法
+let keys = AschWeb.Utils.getKeys(secret)
+console.log('keys:' + JSON.stringify(keys))
+
+let addr: string = AschWeb.Utils.getAddress(keys.publicKey)
+console.log('get address by publicKey:' + addr)
+
+
+let signedTrx = AschWeb.Utils.fullSign(unsignedTrx, secret, secondSecret)
+console.log('full sign transaction:' + JSON.stringify(signedTrx))
+
+const provider = new AschWeb.HTTPProvider(host, net)
+const aschWeb = new AschWeb(provider, secret, secondSecret)
+
+aschWeb.api
+    .transferXAS(1000000, to, 'test')
+    .then(res => {
+        console.log('transfer XAS response:' + JSON.stringify(res))
+    })
+    .catch(err => {
+        console.error(err)
+    })
+
+//
+
+const gasLimit = 5000000
+const name = 'test-contract'
+const version = 'v0.3'
+const desc = '这是一个测试合约'
+const code = `const CURRENCY = 'XAS'
+const EMPTY_ADDRESS = ''
+const MAX_AMOUNT = BigInt(1000 * (10 ** 8))
+
+// 自定义状态类型
+class PayState {
+  // 转账次数
+  payTimes: number
+  // 转账总额
+  amount: bigint
+  constructor() {
+    this.payTimes = 0
+    this.amount = BigInt(0)
+  }
+}
+
+// 数据接口类型
+interface MaxAmountInfo {
+  address?: string
+  amount?: bigint
+  payTimes?: number
+}
+
+// 合约类
+export class TestContract extends AschContract {
+  // 合约收到的转账, 公开属性
+  payStateOfAddress: Mapping<PayState>
+  
+  // 最大转账的地址，私有状态，外部不可查询
+  private maxAmountAddress = EMPTY_ADDRESS
+  // 收到的转账总额
+  private total = BigInt(0)
+
+  // 初始化方法
+  constructor() {
+    super()
+    this.payStateOfAddress = new Mapping<PayState>()
+    this.total = BigInt(0)
+  }
+
+  // 默认向合约转账自动调用的方法
+  @payable({ isDefault : true })
+  onPay(amount: bigint, currency: string) {  
+
+    const address = this.context.senderAddress
+    const newAmount = this.payXAS(amount, address)
+    if (this.getMaxAmount() < newAmount) {
+      this.maxAmountAddress = address
+    }
+  }
+
+  @constant
+  getMaxInfo(): MaxAmountInfo {
+    const address = this.maxAmountAddress
+    if (address === EMPTY_ADDRESS) return { }
+
+    const { payTimes, amount } = this.payStateOfAddress[address]!
+    return { address, payTimes, amount }
+  }
+
+  @constant
+  getTotal(): bigint {
+    return this.total
+  }
+
+  // 内部方法，外部不可访问（下同）
+  private payXAS(amount: bigint, address: string) : bigint {
+    let payState = this.payStateOfAddress[address]
+    if (!payState) {
+      payState = new PayState()
+      this.payStateOfAddress[address] = payState
+    }
+
+    payState.payTimes += 1
+    payState.amount += amount
+    this.total += amount
+
+    return payState.amount
+  }
+
+  private getMaxAmount() : bigint {
+    return (this.maxAmountAddress === EMPTY_ADDRESS) ?
+      BigInt(0) :
+      this.getPayInfo(this.maxAmountAddress).amount
+  }
+
+  private getPayInfo(address: string) : PayState {
+    return this.payStateOfAddress[address] || new PayState()
+  }
+}`// 合约代码
+
+//使用asch-web 构建，签名和广播交易
+aschWeb.api
+  .registerContract(name, desc, code, version, true, gasLimit)
+  .then(res => {
+      console.log('result:' + JSON.stringify(res))
+  })
+  .catch(err => {
+      console.error(err)
+  })
+
+
+</script>
+
+</body>
+</html>
