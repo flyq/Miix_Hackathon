@@ -23,11 +23,11 @@ class IdolBase {
 
 class Auction {
     seller: string
-    startPrice: BigInt
-    endPrice: BigInt
+    startPrice: bigint
+    endPrice: bigint
     duration: number
     startedAt: number
-    constructor(_seller: string, _startPrice: BigInt, _endPrice: BigInt, _duration: number, _startedAt: number) {
+    constructor(_seller: string, _startPrice: bigint, _endPrice: bigint, _duration: number, _startedAt: number) {
         this.seller = _seller
         this.startPrice = _startPrice
         this.endPrice = _endPrice
@@ -48,8 +48,8 @@ interface IdolBaseInfo {
 
 interface AuctionInfo {
     seller: string
-    startPrice: BigInt
-    endPrice: BigInt
+    startPrice: bigint
+    endPrice: bigint
     duration: number
     startedAt: number
 }
