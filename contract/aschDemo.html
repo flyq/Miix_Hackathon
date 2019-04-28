@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button class="btn">部署合约</button>
+<script>
+    window.onload = function () {
+        let btn = document.querySelector('.btn');
+        btn.addEventListener('click', deployContract);
+    };
+    function deployContract() {
+        const aschWeb = window.aschPay;
+        //args参数示例
+        const gasLimit = 5000000
+        const name = 'zuoyao-contract'
+        const version = 'v0.3'
+        const desc = '这是一个测试合约'
+        const code = `const CURRENCY = 'XAS'
+
+class Payment {
+  address: string
+  amount: bigint
+
+  constructor(address: string, amount: bigint) {
+    this.address = address
+    this.amount = amount
+  }
+}
+
+export class HelloContract extends AschContract {
+  private total: bigint
+  private payments: Vector<Payment>
+
+  constructor() {
+    super()
+    this.total = BigInt(0)
+    this.payments = new Vector<Payment>()
+  }
+
+  @payable({ isDefault: true })
+  onPay(amount: bigint, currency: string) {
+    assert(amount > 0, 'Amount should greater than 0')
+    assert(currency === CURRENCY, 'Please pay ' + CURRENCY)
+
+    this.total += amount
+    const payment = new Payment(this.context.senderAddress, amount)
+    this.payments.push(payment)
+  }
+
+  @constant
+  getPayTimes(): number {
+    return this.payments.size()
+  }
+
+  @constant
+  getTotal(): bigint {
+    return this.total
+  }
+}`// 合约代码
+
+        //使用asch-web 构建，签名和广播交易
+        aschWeb.api.registerContract(name, desc, code, version, true, gasLimit)
+            .then(res => {
+                console.log('result:' + JSON.stringify(res))
+            })
+            .catch(err => {
+                console.error(err)
+            })
+    }
+</script>
+</body>
+</html>
