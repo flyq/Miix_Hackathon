@@ -1,0 +1,159 @@
+{
+  "transactionId": "87cd6d35d66c170d615062a312d80cbee4c720ecda120065366a17f5143935f6",
+  "success": true,
+  "gas": 5372,
+  "data": {
+    "className": "HelloContract",
+    "constVariables": [
+      {
+        "name": "CURRENCY",
+        "type": {
+          "name": "string",
+          "text": "string",
+          "kind": 0
+        }
+      }
+    ],
+    "dataInterfaces": [],
+    "customeTypes": [
+      {
+        "name": "Payment",
+        "flat": true,
+        "properties": [
+          {
+            "name": "address",
+            "type": {
+              "name": "string",
+              "text": "string",
+              "kind": 0
+            },
+            "optional": false
+          },
+          {
+            "name": "amount",
+            "type": {
+              "name": "bigint",
+              "text": "bigint",
+              "kind": 0
+            },
+            "optional": false
+          }
+        ],
+        "constructorMethod": {
+          "name": "constructor",
+          "parameters": [
+            {
+              "name": "address",
+              "index": 0,
+              "type": {
+                "name": "string",
+                "text": "string",
+                "kind": 0
+              },
+              "optional": false
+            },
+            {
+              "name": "amount",
+              "index": 1,
+              "type": {
+                "name": "bigint",
+                "text": "bigint",
+                "kind": 0
+              },
+              "optional": false
+            }
+          ],
+          "public": true,
+          "isConstructor": true
+        }
+      }
+    ],
+    "states": [
+      {
+        "name": "total",
+        "public": false,
+        "readonly": false,
+        "type": {
+          "name": "bigint",
+          "text": "bigint",
+          "kind": 0
+        }
+      },
+      {
+        "name": "payments",
+        "public": false,
+        "readonly": false,
+        "type": {
+          "name": "Vector",
+          "text": "Vector<Payment>",
+          "kind": 1,
+          "typeArguments": [
+            {
+              "name": "Payment",
+              "text": "Payment",
+              "kind": 2
+            }
+          ]
+        }
+      }
+    ],
+    "methods": [
+      {
+        "name": "constructor",
+        "parameters": [],
+        "public": true,
+        "isConstructor": true
+      },
+      {
+        "name": "onPay",
+        "parameters": [
+          {
+            "name": "amount",
+            "index": 0,
+            "type": {
+              "name": "bigint",
+              "text": "bigint",
+              "kind": 0
+            },
+            "optional": false
+          },
+          {
+            "name": "currency",
+            "index": 1,
+            "type": {
+              "name": "string",
+              "text": "string",
+              "kind": 0
+            },
+            "optional": false
+          }
+        ],
+        "public": true,
+        "payable": true,
+        "defaultPayable": true
+      },
+      {
+        "name": "getPayTimes",
+        "parameters": [],
+        "public": true,
+        "returnType": {
+          "name": "number",
+          "text": "number",
+          "kind": 0
+        },
+        "constant": true
+      },
+      {
+        "name": "getTotal",
+        "parameters": [],
+        "public": true,
+        "returnType": {
+          "name": "bigint",
+          "text": "bigint",
+          "kind": 0
+        },
+        "constant": true
+      }
+    ]
+  }
+}
