@@ -1,5 +1,3 @@
-import { constants } from "zlib";
-
 const DEV = 'ADXEbSc8N8yV76oA4hvKDBFtiqumsjTT5a'
 const InitName = '妖灵蛋'
 const InitIntro = '这是一个妖灵蛋，你可以买下它并通过上传三次元图片来孵化妖灵'
